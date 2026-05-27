@@ -1515,6 +1515,90 @@ body.light-mode .footer-bottom p {
   opacity: 0.8;
 }
 
+/* ── Dua Card ── */
+.dua-card {
+  padding: 24px 28px;
+  margin-top: 24px;
+}
+.dua-tabs {
+  display: flex;
+  gap: 8px;
+  margin-top: 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 12px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.dua-tabs::-webkit-scrollbar { display: none; }
+.dua-tab-btn {
+  padding: 8px 16px;
+  border-radius: 100px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition);
+}
+.dua-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+.dua-tab-btn.active {
+  background: rgba(212, 168, 67, 0.12);
+  border-color: rgba(212, 168, 67, 0.3);
+  color: var(--gold-light);
+  font-weight: 600;
+}
+.dua-content {
+  margin-top: 20px;
+  min-height: 180px;
+}
+.dua-item {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeIn 0.3s ease;
+}
+.dua-item.active {
+  display: flex;
+}
+.dua-arabic {
+  font-family: 'Inter', 'Noto Naskh Arabic', sans-serif;
+  font-size: 1.45rem;
+  line-height: 2.2;
+  text-align: right;
+  direction: rtl;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 16px 20px;
+  border-radius: var(--radius-sm);
+  border-right: 4px solid var(--gold);
+}
+.dua-translit {
+  font-size: 0.92rem;
+  color: var(--text);
+  line-height: 1.6;
+}
+.dua-translit strong {
+  color: var(--gold-light);
+  font-weight: 600;
+}
+.dua-translation {
+  font-size: 0.92rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  border-left: 2px solid rgba(255, 255, 255, 0.1);
+  padding-left: 12px;
+}
+.dua-translation strong {
+  color: var(--green-light);
+  font-weight: 600;
+}
+
 /* ── Print Styles ── */
 @media print {
   body > *:not(#printArea) { display: none !important; }

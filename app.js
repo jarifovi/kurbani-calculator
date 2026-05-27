@@ -683,3 +683,13 @@ function showToast(msg) {
 
 /* ── HELPERS ── */
 function fmt(n) { return Number(n).toLocaleString('en-IN'); }
+
+/* ── DUAS TAB SWITCHER ── */
+function switchDua(index) {
+  document.querySelectorAll('.dua-tab-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === index);
+  });
+  document.querySelectorAll('.dua-item').forEach((item, i) => {
+    item.classList.toggle('active', i === index);
+  });
+}
