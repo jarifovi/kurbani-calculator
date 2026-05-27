@@ -1205,21 +1205,6 @@ function generateQR() {
   qrSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-/* ── EID WISHES COPY & SHARE ── */
-function copyWish(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  navigator.clipboard.writeText(el.textContent)
-    .then(() => showToast('📋 Wish copied to clipboard!'))
-    .catch(() => showToast('❌ Failed to copy wish'));
-}
-
-function shareWish(id) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  const text = encodeURIComponent(el.textContent);
-  window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-}
 
 
 /* ── INIT CHECKLIST ON LOAD ── */
