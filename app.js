@@ -1203,7 +1203,9 @@ function generateQR() {
     });
   }
   qrSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
-}/* ── EID WISHES COPY & SHARE ── */
+}
+
+/* ── EID WISHES COPY & SHARE ── */
 function copyWish(id) {
   const el = document.getElementById(id);
   if (!el) return;
