@@ -167,6 +167,13 @@ function animateCounter() {
   el.style.transform = 'scale(1.35)';
   el.textContent = participantCount;
   setTimeout(() => { el.style.transform = 'scale(1)'; }, 200);
+
+  // Sync names array if count is reduced below name count
+  if (participantNames.length > participantCount) {
+    participantNames = participantNames.slice(0, participantCount);
+  }
+  renderNameTags();
+
   hideResult();
 }
 
@@ -320,22 +327,22 @@ function calculate(isLoading = false) {
   let totalAnimals, totalShares, extraShares, totalCost, yourCost, totalMeatKg, meatPerPerson;
 
   if (calcMode === 'share' && selectedAnimal !== 'goat') {
-    totalAnimals = Math.ceil(people / sharesPerAni);
-    totalShares  = totalAnimals * sharesPerAni;
-    extraShares  = totalShares - people;
-    yourCost     = price / sharesPerAni;
-    totalCost    = people * yourCost;
-    totalMeatKg   = +(people * (meatPerAnimal / sharesPerAni)).toFixed(1);
+    totalAnimals  = Math.ceil(people / sharesPerAni);
+    totalShares   = totalAnimals * sharesPerAni;
+    extraShares   = totalShares - people;
+    yourCost      = Math.round(price / sharesPerAni);
+    totalCost     = people * yourCost;
     meatPerPerson = +(meatPerAnimal / sharesPerAni).toFixed(1);
+    totalMeatKg   = +(people * meatPerPerson).toFixed(1);
   } else {
     // Whole animal split (or goat calculation where shares = 1)
-    totalAnimals = Math.ceil(people / sharesPerAni);
-    totalShares  = totalAnimals * sharesPerAni;
-    extraShares  = totalShares - people;
-    totalCost    = totalAnimals * price;
-    yourCost     = totalCost / people;
-    totalMeatKg   = +(totalAnimals * meatPerAnimal).toFixed(1);
-    meatPerPerson = +(totalMeatKg / people).toFixed(1);
+    totalAnimals  = Math.ceil(people / sharesPerAni);
+    totalShares   = totalAnimals * sharesPerAni;
+    extraShares   = totalShares - people;
+    totalCost     = totalAnimals * price;
+    yourCost      = Math.round(totalCost / people);
+    meatPerPerson = +( (totalAnimals * meatPerAnimal) / people ).toFixed(1);
+    totalMeatKg   = +(people * meatPerPerson).toFixed(1);
   }
 
   lastResult = {
