@@ -290,7 +290,7 @@ function renderNameTags() {
 }
 
 /* ── CALCULATE ── */
-function calculate() {
+function calculate(isLoading = false) {
   const customP = parseFloat(document.getElementById('customPrice').value);
   const price   = customP > 0 ? customP : selectedPrice;
   if (!price || price <= 0) { showToast('⚠️ Please select or enter a price per animal.'); return; }
@@ -346,6 +346,10 @@ function calculate() {
     date: new Date().toLocaleString('en-BD'),
   };
   renderResult(lastResult);
+  
+  if (!isLoading) {
+    saveToHistory(true);
+  }
 }
 
 /* ── RENDER RESULT ── */
@@ -477,39 +481,172 @@ function printResult() {
 }
 
 /* ── HISTORY ── */
-function saveToHistory() {
+function scrollToHistory() {
+  const section = document.getElementById('historySection');
+  if (section) {
+    section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function saveToHistory(silent = false) {
   if (!lastResult) return;
   const r = lastResult;
   const entry = {
-    animal: selectedAnimal, emoji: r.animal.emoji, label: r.animal.label,
-    people: r.people, animals: r.totalAnimals,
-    totalCost: r.totalCost, yourCost: Math.round(r.yourCost),
+    animal: selectedAnimal,
+    emoji: r.animal.emoji,
+    label: r.animal.label,
+    people: r.people,
+    animals: r.totalAnimals,
+    totalCost: r.totalCost,
+    yourCost: Math.round(r.yourCost),
     date: r.date,
+    selectedAnimal: selectedAnimal,
+    price: r.price,
+    calcMode: r.calcMode,
+    weightMode: weightMode,
+    yieldPct: yieldPct,
+    manualMeatKg: parseFloat(document.getElementById('manualMeatKg').value) || null,
+    liveWeightKg: parseFloat(document.getElementById('liveWeightKg').value) || null,
+    names: [...r.names]
   };
   let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  history.unshift(entry);
-  if (history.length > 10) history = history.slice(0, 10);
+  
+  // Check if we already have an identical recent entry to avoid duplicate spamming
+  const isDuplicate = history.length > 0 && 
+    history[0].selectedAnimal === entry.selectedAnimal &&
+    history[0].people === entry.people &&
+    history[0].price === entry.price &&
+    history[0].calcMode === entry.calcMode &&
+    history[0].weightMode === entry.weightMode &&
+    JSON.stringify(history[0].names) === JSON.stringify(entry.names);
+    
+  if (isDuplicate) {
+    history[0].date = entry.date;
+  } else {
+    history.unshift(entry);
+    if (history.length > 10) history = history.slice(0, 10);
+  }
+  
   localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
   renderHistory();
-  showToast('💾 Calculation saved to history!');
+  if (!silent) {
+    showToast('💾 Calculation saved to history!');
+  }
 }
-function loadHistory() { renderHistory(); }
+
+function loadHistory() { 
+  renderHistory(); 
+}
+
 function renderHistory() {
   const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-  const section = document.getElementById('historySection');
   const list    = document.getElementById('historyList');
-  if (!history.length) { section.style.display = 'none'; return; }
-  section.style.display = 'block';
-  list.innerHTML = history.map(e => `
-    <div class="hist-item">
+  const empty   = document.getElementById('historyEmpty');
+  const clearBtn = document.getElementById('clearHistBtn');
+  
+  if (!history.length) {
+    list.style.display = 'none';
+    if (empty) empty.style.display = 'flex';
+    if (clearBtn) clearBtn.style.display = 'none';
+    return;
+  }
+  
+  list.style.display = 'flex';
+  list.style.flexDirection = 'column';
+  if (empty) empty.style.display = 'none';
+  if (clearBtn) clearBtn.style.display = 'block';
+  
+  list.innerHTML = history.map((e, idx) => `
+    <div class="hist-item" onclick="loadHistoryEntry(${idx})" title="Click to load this calculation">
       <div class="hist-emoji">${e.emoji}</div>
       <div class="hist-info">
         <div class="hist-title">${e.label} × ${e.animals} — ${e.people} people</div>
-        <div class="hist-meta">${e.date}</div>
+        <div class="hist-meta">${e.date} · Click to Load</div>
       </div>
-      <div class="hist-cost">৳ ${fmt(e.totalCost)}</div>
+      <div class="hist-cost">
+        <span class="hist-cost-val">৳ ${fmt(e.totalCost)}</span>
+        <span class="hist-cost-btn">Load 🔄</span>
+      </div>
     </div>`).join('');
 }
+
+function loadHistoryEntry(index) {
+  const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  const entry = history[index];
+  if (!entry) return;
+
+  // Restore state variables
+  selectedAnimal = entry.selectedAnimal || entry.animal;
+  participantCount = entry.people;
+  calcMode = entry.calcMode || 'share';
+  weightMode = entry.weightMode || 'auto';
+  yieldPct = entry.yieldPct || 38;
+  participantNames = entry.names || [];
+
+  // Update UI Elements
+  // 1. Animal Buttons
+  document.querySelectorAll('.animal-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.animal === selectedAnimal);
+  });
+  
+  const step2b = document.getElementById('calcModeStep');
+  if (selectedAnimal === 'goat') {
+    step2b.style.display = 'none';
+  } else {
+    step2b.style.display = 'block';
+  }
+
+  // 2. Participant Counter
+  document.getElementById('participantCount').textContent = participantCount;
+
+  // 3. Calculation Mode Buttons
+  setCalcMode(calcMode);
+
+  // 4. Price and presets
+  buildPricePresets(selectedAnimal);
+  const customPriceInput = document.getElementById('customPrice');
+  
+  let matchedPreset = false;
+  const presets = PRICE_PRESETS[selectedAnimal];
+  const presetBtns = document.querySelectorAll('#pricePresets .preset-btn');
+  for (let i = 0; i < presets.length; i++) {
+    if (presets[i].val === entry.price) {
+      if (presetBtns[i]) presetBtns[i].classList.add('active');
+      selectedPrice = entry.price;
+      customPriceInput.value = '';
+      matchedPreset = true;
+      break;
+    }
+  }
+  if (!matchedPreset) {
+    customPriceInput.value = entry.price;
+    selectedPrice = null;
+  }
+
+  // 5. Weight Mode
+  setWeightMode(weightMode);
+  if (weightMode === 'manual') {
+    document.getElementById('manualMeatKg').value = entry.manualMeatKg || '';
+  } else if (weightMode === 'live') {
+    document.getElementById('liveWeightKg').value = entry.liveWeightKg || '';
+    document.getElementById('yieldPct').value = yieldPct;
+    updateLiveResult();
+  }
+
+  // 6. Names
+  renderNameTags();
+
+  // 7. Calculate without re-saving as a duplicate
+  calculate(true);
+
+  showToast('📜 Loaded calculation from history!');
+  
+  setTimeout(() => {
+    const card = document.getElementById('resultCard');
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 100);
+}
+
 function clearHistory() {
   localStorage.removeItem(HISTORY_KEY);
   renderHistory();

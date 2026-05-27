@@ -36,6 +36,9 @@
         </div>
       </div>
       <div class="header-right">
+        <button onclick="scrollToHistory()" class="theme-toggle-btn" aria-label="View History" title="View History">
+          <span>📜</span>
+        </button>
         <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme"
           title="Toggle Theme">
           <span id="themeToggleIcon">☀️</span>
@@ -288,16 +291,21 @@
     </section>
 
     <!-- History Card -->
-    <section class="card history-card" id="historySection" style="display:none;">
+    <section class="card history-card" id="historySection">
       <div class="card-header">
         <div class="card-icon">📜</div>
         <div>
           <h2>Calculation History</h2>
           <p>Your recent Kurbani calculations</p>
         </div>
-        <button class="clear-hist-btn" onclick="clearHistory()">🗑️ Clear All</button>
+        <button class="clear-hist-btn" id="clearHistBtn" onclick="clearHistory()" style="display:none;">🗑️ Clear All</button>
       </div>
       <div id="historyList"></div>
+      <div class="history-empty" id="historyEmpty">
+        <span class="history-empty-icon">📭</span>
+        <p>No calculations yet</p>
+        <p class="history-empty-hint">Your Kurbani calculations will appear here automatically after you calculate.</p>
+      </div>
     </section>
 
   </main>
