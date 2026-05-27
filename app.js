@@ -913,77 +913,251 @@ function generateCard() {
   const canvas = document.getElementById('greetingCanvas');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W = 600, H = 340;
+  
+  // Set high-resolution dimensions (2x standard size for crisp retina displays)
+  const W = 1200, H = 680;
   canvas.width  = W;
   canvas.height = H;
 
-  // Background gradient
-  const grad = ctx.createLinearGradient(0, 0, W, H);
-  grad.addColorStop(0,   '#050d0a');
-  grad.addColorStop(0.5, '#0d2a1a');
-  grad.addColorStop(1,   '#1a0a00');
+  // 1. Premium Royal Background Gradient
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, '#02180f'); // Ultra dark emerald
+  grad.addColorStop(0.4, '#062d1c'); // Deep rich green
+  grad.addColorStop(1, '#1b0e00'); // Warm golden amber/chocolate tint
   ctx.fillStyle = grad;
   ctx.fillRect(0, 0, W, H);
 
-  // Gold border
+  // Helper function for adding subtle glow
+  const enableGlow = (color, blur) => {
+    ctx.shadowColor = color;
+    ctx.shadowBlur = blur;
+  };
+  const disableGlow = () => {
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+  };
+
+  // 2. Sparking Stars in Background
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+  for (let i = 0; i < 45; i++) {
+    const starX = Math.random() * W;
+    const starY = Math.random() * (H - 120);
+    const starSize = Math.random() * 2 + 1;
+    ctx.fillRect(starX, starY, starSize, starSize);
+  }
+
+  // 3. Ornate Double Gold Framing
+  // Outer frame
   ctx.strokeStyle = '#d4a843';
-  ctx.lineWidth   = 3;
-  ctx.strokeRect(10, 10, W - 20, H - 20);
+  ctx.lineWidth   = 6;
+  ctx.strokeRect(20, 20, W - 40, H - 40);
 
-  // Inner border
-  ctx.strokeStyle = 'rgba(212,168,67,0.3)';
-  ctx.lineWidth   = 1;
-  ctx.strokeRect(18, 18, W - 36, H - 36);
+  // Inner frame with corner accents
+  ctx.strokeStyle = 'rgba(212, 168, 67, 0.4)';
+  ctx.lineWidth   = 2;
+  ctx.strokeRect(36, 36, W - 72, H - 72);
 
-  // Moon
-  ctx.font = '54px serif';
-  ctx.textAlign = 'center';
-  ctx.fillText('🌙', W / 2, 80);
+  // Ornate corners
+  const drawCornerAccent = (x, y, dx, dy) => {
+    ctx.strokeStyle = '#d4a843';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(x, y + dy * 30);
+    ctx.lineTo(x, y);
+    ctx.lineTo(x + dx * 30, y);
+    ctx.stroke();
+  };
+  drawCornerAccent(36, 36, 1, 1);
+  drawCornerAccent(W - 36, 36, -1, 1);
+  drawCornerAccent(36, H - 36, 1, -1);
+  drawCornerAccent(W - 36, H - 36, -1, -1);
 
-  // Eid Mubarak
-  ctx.font = 'bold 34px Inter, sans-serif';
-  const titleGrad = ctx.createLinearGradient(W/2 - 120, 0, W/2 + 120, 0);
-  titleGrad.addColorStop(0, '#f0c060');
-  titleGrad.addColorStop(1, '#52b788');
-  ctx.fillStyle = titleGrad;
-  ctx.fillText('Eid Mubarak', W / 2, 130);
-
-  // Arabic
-  ctx.font = '16px serif';
-  ctx.fillStyle = 'rgba(240,192,96,0.7)';
-  ctx.fillText('عيد مبارك', W / 2, 158);
-
-  // Divider
-  ctx.strokeStyle = 'rgba(212,168,67,0.4)';
-  ctx.lineWidth = 1;
+  // 4. Glowing Islamic Mosque Arch/Dome outline in center-background
+  ctx.strokeStyle = 'rgba(212, 168, 67, 0.08)';
+  ctx.lineWidth = 3;
   ctx.beginPath();
-  ctx.moveTo(80, 172); ctx.lineTo(W - 80, 172);
+  ctx.moveTo(W / 2 - 250, H - 36);
+  ctx.lineTo(W / 2 - 250, H - 250);
+  ctx.quadraticCurveTo(W / 2 - 250, H - 480, W / 2 - 120, H - 520);
+  ctx.quadraticCurveTo(W / 2, H - 570, W / 2, H - 580); // Pointy tip of dome
+  ctx.quadraticCurveTo(W / 2, H - 570, W / 2 + 120, H - 520);
+  ctx.quadraticCurveTo(W / 2 + 250, H - 480, W / 2 + 250, H - 250);
+  ctx.lineTo(W / 2 + 250, H - 36);
   ctx.stroke();
 
-  // To / From
-  ctx.font = '16px Inter, sans-serif';
+  // 5. Draw Hanging Mosque Lanterns (Fanoos)
+  const drawLantern = (x, length) => {
+    // String/Chain
+    ctx.strokeStyle = 'rgba(212, 168, 67, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(x, 36);
+    ctx.lineTo(x, length);
+    ctx.stroke();
+
+    // Lantern Cap
+    ctx.fillStyle = '#b88d2d';
+    ctx.beginPath();
+    ctx.moveTo(x - 20, length);
+    ctx.lineTo(x + 20, length);
+    ctx.lineTo(x + 10, length + 15);
+    ctx.lineTo(x - 10, length + 15);
+    ctx.closePath();
+    ctx.fill();
+
+    // Lantern Body
+    enableGlow('#f0c060', 15);
+    ctx.fillStyle = 'rgba(240, 192, 96, 0.85)';
+    ctx.beginPath();
+    ctx.moveTo(x - 10, length + 15);
+    ctx.lineTo(x + 10, length + 15);
+    ctx.lineTo(x + 18, length + 50);
+    ctx.lineTo(x + 10, length + 65);
+    ctx.lineTo(x - 10, length + 65);
+    ctx.lineTo(x - 18, length + 50);
+    ctx.closePath();
+    ctx.fill();
+    disableGlow();
+
+    // Ornate glass lines
+    ctx.strokeStyle = '#6e5113';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(x, length + 15);
+    ctx.lineTo(x, length + 65);
+    ctx.moveTo(x - 10, length + 15);
+    ctx.lineTo(x - 10, length + 65);
+    ctx.moveTo(x + 10, length + 15);
+    ctx.lineTo(x + 10, length + 65);
+    ctx.stroke();
+
+    // Lantern Bottom Ring
+    ctx.fillStyle = '#b88d2d';
+    ctx.fillRect(x - 8, length + 65, 16, 6);
+
+    // Mini hanging tassel
+    ctx.strokeStyle = '#d4a843';
+    ctx.beginPath();
+    ctx.moveTo(x, length + 71);
+    ctx.lineTo(x, length + 82);
+    ctx.stroke();
+  };
+  drawLantern(120, 120);
+  drawLantern(W - 120, 120);
+  drawLantern(220, 80);
+  drawLantern(W - 220, 80);
+
+  // 6. Huge Glowing Crescent Moon in the Center
+  enableGlow('#f0c060', 25);
+  ctx.fillStyle = '#f0c060';
+  ctx.beginPath();
+  // Outer circle arc
+  ctx.arc(W / 2, 170, 75, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+
+  // Mask crescent inner circle to get realistic crescent moon
+  ctx.globalCompositeOperation = 'destination-out';
+  ctx.beginPath();
+  ctx.arc(W / 2 + 25, 155, 75, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.fill();
+  ctx.globalCompositeOperation = 'source-over'; // Reset operation
+  disableGlow();
+
+  // 7. Small star nestled inside the crescent
+  enableGlow('#ffffff', 10);
+  ctx.fillStyle = '#ffffff';
+  const drawStar = (cx, cy, spikes, outerRadius, innerRadius) => {
+    let rot = Math.PI / 2 * 3;
+    let sx = cx;
+    let sy = cy;
+    let step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+      sx = cx + Math.cos(rot) * outerRadius;
+      sy = cy + Math.sin(rot) * outerRadius;
+      ctx.lineTo(sx, sy);
+      rot += step;
+
+      sx = cx + Math.cos(rot) * innerRadius;
+      sy = cy + Math.sin(rot) * innerRadius;
+      ctx.lineTo(sx, sy);
+      rot += step;
+    }
+    ctx.lineTo(cx, cy - outerRadius);
+    ctx.closePath();
+    ctx.fill();
+  };
+  drawStar(W / 2 - 20, 150, 5, 14, 6);
+  disableGlow();
+
+  // 8. Elegant Card Typography
+  // Arabic Text: Eid Mubarak
+  ctx.font = 'normal 32px Amiri, serif';
+  ctx.textAlign = 'center';
+  enableGlow('#d4a843', 8);
+  ctx.fillStyle = 'rgba(212, 168, 67, 0.9)';
+  ctx.fillText('تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ', W / 2, 300); // May Allah accept it from us and from you
+  disableGlow();
+
+  // Main Eid Mubarak text with gradient & drop shadow
+  ctx.font = 'bold 64px "Inter", sans-serif';
+  const titleGrad = ctx.createLinearGradient(W/2 - 250, 0, W/2 + 250, 0);
+  titleGrad.addColorStop(0, '#ffe596'); // Brilliant gold
+  titleGrad.addColorStop(0.5, '#d4a843'); // Classic gold
+  titleGrad.addColorStop(1, '#82bca0'); // Rich mint
+  
+  // Text shadow for premium depth
+  ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+  ctx.shadowBlur = 12;
+  ctx.shadowOffsetX = 4;
+  ctx.shadowOffsetY = 4;
+  
+  ctx.fillStyle = titleGrad;
+  ctx.fillText('EID MUBARAK', W / 2, 385);
+  disableGlow(); // Clears offsets as well
+
+  // English Tagline
+  ctx.font = '500 22px "Inter", sans-serif';
   ctx.fillStyle = '#8aab97';
-  ctx.fillText(`To: ${to}`, W / 2, 204);
+  ctx.fillText('EID AL-ADHA 2026', W / 2, 430);
 
-  ctx.font = 'italic 14px Inter, sans-serif';
-  ctx.fillStyle = 'rgba(240,192,96,0.85)';
-  ctx.fillText(`From: ${from}`, W / 2, 228);
+  // Subtle separator line
+  ctx.strokeStyle = 'rgba(212, 168, 67, 0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 150, 460);
+  ctx.lineTo(W / 2 + 150, 460);
+  ctx.stroke();
 
-  // Message
-  ctx.font = '13px Inter, sans-serif';
-  ctx.fillStyle = 'rgba(232,240,235,0.6)';
-  ctx.fillText('May Allah accept your Kurbani & grant barakah 🤲', W / 2, 264);
+  // To Field
+  ctx.font = '600 24px "Inter", sans-serif';
+  ctx.fillStyle = '#ffffff';
+  ctx.fillText(`To: ${to}`, W / 2, 510);
 
-  // Footer
-  ctx.font = '11px Inter, sans-serif';
-  ctx.fillStyle = 'rgba(138,171,151,0.5)';
-  ctx.fillText('Generated with Kurbani Calculator • jarifovi.github.io/kurbani-calculator', W / 2, 310);
+  // From Field
+  ctx.font = 'italic 20px "Inter", sans-serif';
+  ctx.fillStyle = '#ffe596';
+  ctx.fillText(`With prayers from: ${from}`, W / 2, 545);
 
-  // Show canvas and action buttons
-  canvas.style.display  = 'block';
+  // Closing barakah text
+  ctx.font = 'normal 17px "Inter", sans-serif';
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+  ctx.fillText('May this blessed occasion bring peace, joy, and endless barakah to your family. 🤲', W / 2, 595);
+
+  // Branding watermark
+  ctx.font = '500 13px "Inter", sans-serif';
+  ctx.fillStyle = 'rgba(212, 168, 67, 0.4)';
+  ctx.fillText('kurbani-calculator • built for the ummah', W / 2, 640);
+
+  // Reveal UI Elements
+  canvas.style.display = 'block';
   const actions = document.getElementById('greetingActions');
   if (actions) actions.style.display = 'flex';
-  showToast('🎉 Eid card generated!');
+  showToast('🎉 High-Resolution Eid card generated!');
 }
 
 function downloadCard() {
