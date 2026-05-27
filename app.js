@@ -704,3 +704,340 @@ function switchDua(index) {
     item.classList.toggle('active', i === index);
   });
 }
+
+/* ── PWA: SERVICE WORKER ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+/* ── PWA: INSTALL PROMPT ── */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.style.display = 'flex';
+});
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('installBtn');
+  if (btn) btn.addEventListener('click', () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    deferredInstallPrompt.userChoice.then(() => {
+      deferredInstallPrompt = null;
+      btn.style.display = 'none';
+    });
+  });
+});
+
+/* ── LANGUAGE TOGGLE ── */
+let currentLang = localStorage.getItem('kurbani_lang') || 'en';
+const LANG = {
+  en: {
+    calcTitle: 'Kurbani Share Calculator',
+    calcSub: 'Calculate animals, shares and total cost',
+    step1: 'Select Animal Type',
+    step2: 'Number of Participants',
+    step3: 'Estimated Price per Animal (BDT ৳)',
+    step4: 'Animal Weight / Meat Yield (Optional)',
+    step5: 'Participant Names',
+    calcBtn: 'Calculate Kurbani',
+    badge: 'Eid Mubarak 🌙',
+  },
+  bn: {
+    calcTitle: 'কোরবানি ক্যালকুলেটর',
+    calcSub: 'পশু, অংশ ও মোট খরচ হিসাব করুন',
+    step1: 'পশুর ধরন নির্বাচন করুন',
+    step2: 'অংশগ্রহণকারীর সংখ্যা',
+    step3: 'পশুর আনুমানিক মূল্য (BDT ৳)',
+    step4: 'পশুর ওজন / মাংসের পরিমাণ (ঐচ্ছিক)',
+    step5: 'অংশগ্রহণকারীদের নাম',
+    calcBtn: 'কোরবানি হিসাব করুন',
+    badge: 'ঈদ মোবারক 🌙',
+  }
+};
+function toggleLanguage() {
+  currentLang = currentLang === 'en' ? 'bn' : 'en';
+  localStorage.setItem('kurbani_lang', currentLang);
+  const icon = document.getElementById('langToggleIcon');
+  if (icon) icon.textContent = currentLang === 'en' ? 'বাং' : 'EN';
+  applyLanguage();
+  showToast(currentLang === 'bn' ? '🇧🇩 বাংলা সক্রিয়' : '🇬🇧 English activated');
+}
+function applyLanguage() {
+  const L = LANG[currentLang];
+  const setT = (id, txt) => { const el = document.getElementById(id); if (el) el.textContent = txt; };
+  const setQ = (sel, txt) => { const el = document.querySelector(sel); if (el) el.textContent = txt; };
+  setQ('.calc-card .card-header h2', L.calcTitle);
+  setQ('.calc-card .card-header p', L.calcSub);
+  const calcBtn = document.getElementById('calcBtn');
+  if (calcBtn) calcBtn.textContent = '✦ ' + L.calcBtn + ' ✦';
+  const badge = document.querySelector('.header-badge span:last-child');
+  if (badge) badge.textContent = L.badge;
+  // Apply lang icon
+  const icon = document.getElementById('langToggleIcon');
+  if (icon) icon.textContent = currentLang === 'en' ? 'বাং' : 'EN';
+}
+
+/* ── ANIMATED NUMBER COUNTER ── */
+function animateValue(el, from, to, duration = 700) {
+  if (!el) return;
+  const start = performance.now();
+  const update = (time) => {
+    const elapsed = time - start;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = fmt(Math.round(from + (to - from) * eased));
+    if (progress < 1) requestAnimationFrame(update);
+  };
+  requestAnimationFrame(update);
+}
+
+/* ── ZAKAT CALCULATOR ── */
+function calcZakat() {
+  const cash     = +( document.getElementById('zakatCash')?.value     || 0);
+  const gold     = +( document.getElementById('zakatGold')?.value     || 0);
+  const business = +( document.getElementById('zakatBusiness')?.value || 0);
+  const debts    = +( document.getElementById('zakatDebts')?.value    || 0);
+  const total = cash + gold + business + debts;
+  const nisab = SILVER_NISAB_BDT;
+  const due   = total >= nisab ? +(total * 0.025).toFixed(0) : 0;
+
+  const resultBox = document.getElementById('zakatResult');
+  if (!resultBox) return;
+  resultBox.style.display = 'block';
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('zakatTotal',  '৳ ' + fmt(total));
+  setEl('zakatNisab',  '৳ ' + fmt(nisab));
+  setEl('zakatDue',    '৳ ' + fmt(due));
+
+  const eligRow = document.getElementById('zakatEligRow');
+  const eligStat = document.getElementById('zakatStatus');
+  if (eligRow && eligStat) {
+    if (total > 0) {
+      eligRow.style.display = 'flex';
+      eligStat.textContent = total >= nisab ? '✅ Zakat is obligatory' : '❌ Below Nisab – not yet obligatory';
+    } else {
+      eligRow.style.display = 'none';
+    }
+  }
+}
+
+/* ── KURBANI CHECKLIST ── */
+const CHECKLIST_TASKS = [
+  'Check Nisab eligibility (Zakat threshold)',
+  'Choose your animal type (Cow / Goat / Camel)',
+  'Find a reliable animal seller or farm',
+  'Agree on price and book the animal',
+  'Arrange for a certified butcher (কসাই)',
+  'Confirm the sacrifice date (Eid Day)',
+  'Distribute meat: ⅓ family · ⅓ neighbours · ⅓ poor',
+  'Make Dua and offer Kurbani with intention (নিয়্যত)',
+];
+const CHECKLIST_KEY = 'kurbani_checklist_2026';
+
+function initChecklist() {
+  const saved = JSON.parse(localStorage.getItem(CHECKLIST_KEY) || '[]');
+  const container = document.getElementById('checklistItems');
+  if (!container) return;
+  container.innerHTML = '';
+  CHECKLIST_TASKS.forEach((task, i) => {
+    const done = saved.includes(i);
+    const item = document.createElement('label');
+    item.className = 'checklist-item' + (done ? ' done' : '');
+    item.innerHTML = `
+      <input type="checkbox" ${done ? 'checked' : ''} onchange="toggleCheck(${i}, this)" />
+      <span class="checklist-icon">${done ? '✅' : '⬜'}</span>
+      <span class="checklist-text">${task}</span>
+    `;
+    container.appendChild(item);
+  });
+  updateChecklistProgress(saved);
+}
+
+function toggleCheck(index, checkbox) {
+  let saved = JSON.parse(localStorage.getItem(CHECKLIST_KEY) || '[]');
+  if (checkbox.checked) {
+    if (!saved.includes(index)) saved.push(index);
+  } else {
+    saved = saved.filter(i => i !== index);
+  }
+  localStorage.setItem(CHECKLIST_KEY, JSON.stringify(saved));
+  const items = document.querySelectorAll('.checklist-item');
+  if (items[index]) {
+    items[index].classList.toggle('done', checkbox.checked);
+    const icon = items[index].querySelector('.checklist-icon');
+    if (icon) icon.textContent = checkbox.checked ? '✅' : '⬜';
+  }
+  updateChecklistProgress(saved);
+}
+
+function updateChecklistProgress(saved) {
+  const done  = saved.length;
+  const total = CHECKLIST_TASKS.length;
+  const pct   = Math.round((done / total) * 100);
+  const label = document.getElementById('checklistProgressLabel');
+  const bar   = document.getElementById('checklistBarFill');
+  if (label) label.textContent = `${done} of ${total} tasks completed`;
+  if (bar) bar.style.width = pct + '%';
+}
+
+function resetChecklist() {
+  localStorage.removeItem(CHECKLIST_KEY);
+  initChecklist();
+  showToast('✅ Checklist reset!');
+}
+
+/* ── EID GREETING CARD (Canvas) ── */
+function generateCard() {
+  const from   = (document.getElementById('greetFrom')?.value.trim() || 'You');
+  const to     = (document.getElementById('greetTo')?.value.trim()   || 'Family & Friends');
+  const canvas = document.getElementById('greetingCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = 600, H = 340;
+  canvas.width  = W;
+  canvas.height = H;
+
+  // Background gradient
+  const grad = ctx.createLinearGradient(0, 0, W, H);
+  grad.addColorStop(0,   '#050d0a');
+  grad.addColorStop(0.5, '#0d2a1a');
+  grad.addColorStop(1,   '#1a0a00');
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, W, H);
+
+  // Gold border
+  ctx.strokeStyle = '#d4a843';
+  ctx.lineWidth   = 3;
+  ctx.strokeRect(10, 10, W - 20, H - 20);
+
+  // Inner border
+  ctx.strokeStyle = 'rgba(212,168,67,0.3)';
+  ctx.lineWidth   = 1;
+  ctx.strokeRect(18, 18, W - 36, H - 36);
+
+  // Moon
+  ctx.font = '54px serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('🌙', W / 2, 80);
+
+  // Eid Mubarak
+  ctx.font = 'bold 34px Inter, sans-serif';
+  const titleGrad = ctx.createLinearGradient(W/2 - 120, 0, W/2 + 120, 0);
+  titleGrad.addColorStop(0, '#f0c060');
+  titleGrad.addColorStop(1, '#52b788');
+  ctx.fillStyle = titleGrad;
+  ctx.fillText('Eid Mubarak', W / 2, 130);
+
+  // Arabic
+  ctx.font = '16px serif';
+  ctx.fillStyle = 'rgba(240,192,96,0.7)';
+  ctx.fillText('عيد مبارك', W / 2, 158);
+
+  // Divider
+  ctx.strokeStyle = 'rgba(212,168,67,0.4)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(80, 172); ctx.lineTo(W - 80, 172);
+  ctx.stroke();
+
+  // To / From
+  ctx.font = '16px Inter, sans-serif';
+  ctx.fillStyle = '#8aab97';
+  ctx.fillText(`To: ${to}`, W / 2, 204);
+
+  ctx.font = 'italic 14px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(240,192,96,0.85)';
+  ctx.fillText(`From: ${from}`, W / 2, 228);
+
+  // Message
+  ctx.font = '13px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(232,240,235,0.6)';
+  ctx.fillText('May Allah accept your Kurbani & grant barakah 🤲', W / 2, 264);
+
+  // Footer
+  ctx.font = '11px Inter, sans-serif';
+  ctx.fillStyle = 'rgba(138,171,151,0.5)';
+  ctx.fillText('Generated with Kurbani Calculator • jarifovi.github.io/kurbani-calculator', W / 2, 310);
+
+  // Show canvas and action buttons
+  canvas.style.display  = 'block';
+  const actions = document.getElementById('greetingActions');
+  if (actions) actions.style.display = 'flex';
+  showToast('🎉 Eid card generated!');
+}
+
+function downloadCard() {
+  const canvas = document.getElementById('greetingCanvas');
+  if (!canvas) return;
+  const link    = document.createElement('a');
+  link.download = 'eid-mubarak-card.png';
+  link.href     = canvas.toDataURL('image/png');
+  link.click();
+  showToast('⬇️ Card downloaded!');
+}
+
+async function shareGreetingCard() {
+  const canvas = document.getElementById('greetingCanvas');
+  if (!canvas) return;
+  canvas.toBlob(async (blob) => {
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'eid-card.png', { type: 'image/png' })] })) {
+      await navigator.share({
+        title: 'Eid Mubarak! 🌙',
+        text:  'Wishing you a blessed Eid al-Adha!',
+        files: [new File([blob], 'eid-card.png', { type: 'image/png' })],
+      }).catch(() => downloadCard());
+    } else {
+      downloadCard();
+    }
+  });
+}
+
+/* ── QR CODE ── */
+function generateQR() {
+  const qrEl = document.getElementById('qrCodeDisplay');
+  const qrSec = document.getElementById('qrSection');
+  if (!qrEl || !qrSec) return;
+  qrEl.innerHTML = '';
+  qrSec.style.display = 'block';
+  if (typeof QRCode !== 'undefined') {
+    new QRCode(qrEl, {
+      text:   'https://jarifovi.github.io/kurbani-calculator/',
+      width:  160,
+      height: 160,
+      colorDark:  '#050d0a',
+      colorLight: '#ffffff',
+    });
+  }
+  qrSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+/* ── RESULT ACTIONS: add QR button ── */
+// Patch renderResult to expose QR button in results
+const _origRenderResult = renderResult;
+function renderResult(r) {
+  _origRenderResult(r);
+  // Add QR button if not already there
+  const actions = document.querySelector('#resultCard .result-actions');
+  if (actions && !document.getElementById('qrBtn')) {
+    const qrBtn = document.createElement('button');
+    qrBtn.id = 'qrBtn';
+    qrBtn.className = 'action-btn';
+    qrBtn.style.cssText = 'background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);color:var(--gold-light);';
+    qrBtn.innerHTML = '📷 QR Code';
+    qrBtn.onclick = generateQR;
+    actions.appendChild(qrBtn);
+  }
+}
+
+/* ── INIT CHECKLIST ON LOAD ── */
+document.addEventListener('DOMContentLoaded', () => {
+  initChecklist();
+  applyLanguage();
+  // Show QR section with a generate button in results
+  const resultActions = document.querySelector('#resultCard .result-actions');
+});

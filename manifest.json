@@ -1,0 +1,17 @@
+{
+  "name": "Kurbani Calculator – Eid al-Adha",
+  "short_name": "Kurbani Calc",
+  "description": "Calculate Kurbani shares, costs, Nisab & Zakat for Eid al-Adha",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#050d0a",
+  "theme_color": "#050d0a",
+  "orientation": "portrait-primary",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "categories": ["finance", "utilities", "lifestyle"],
+  "lang": "en",
+  "dir": "ltr"
+}

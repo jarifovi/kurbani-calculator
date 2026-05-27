@@ -1724,6 +1724,108 @@ body.light-mode .footer-bottom p {
   100% { width: 100%; }
 }
 
+/* ── Zakat Calculator ── */
+.zakat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+@media (max-width: 580px) { .zakat-grid { grid-template-columns: 1fr; } }
+.zakat-result {
+  background: rgba(45,106,79,0.12);
+  border: 1px solid rgba(82,183,136,0.2);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeSlide 0.3s ease;
+}
+.zakat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.92rem;
+  color: var(--text);
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.zakat-row:last-child { border-bottom: none; }
+.zakat-due {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--gold-light);
+  border-top: 1px solid rgba(212,168,67,0.25);
+  padding-top: 12px;
+  margin-top: 4px;
+}
+.zakat-eligible span { color: var(--green-light); font-weight: 600; }
+
+/* ── Checklist ── */
+.checklist-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.checklist-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+}
+.checklist-item:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(212,168,67,0.2);
+}
+.checklist-item.done {
+  background: rgba(45,106,79,0.12);
+  border-color: rgba(82,183,136,0.2);
+}
+.checklist-item input[type="checkbox"] { display: none; }
+.checklist-icon { font-size: 1.1rem; flex-shrink: 0; }
+.checklist-text {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.4;
+  transition: color var(--transition);
+}
+.checklist-item.done .checklist-text {
+  color: var(--text-muted);
+  text-decoration: line-through;
+  text-decoration-color: rgba(82,183,136,0.4);
+}
+.checklist-progress-wrap { margin-top: 4px; }
+.checklist-bar {
+  height: 5px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+.checklist-bar-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--green), var(--gold-light));
+  border-radius: 10px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Greeting Card Inputs ── */
+.greeting-inputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 580px) { .greeting-inputs { grid-template-columns: 1fr; } }
+
 /* ── Print Styles ── */
 @media print {
   body > *:not(#printArea) { display: none !important; }

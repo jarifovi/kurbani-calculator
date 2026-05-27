@@ -19,10 +19,14 @@
     href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
-  <!-- PWA theme color -->
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#050d0a" />
   <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <!-- QR Code library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 
 <body>
@@ -65,9 +69,14 @@
         <button onclick="scrollToHistory()" class="theme-toggle-btn" aria-label="View History" title="View History">
           <span>📜</span>
         </button>
-        <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme"
-          title="Toggle Theme">
+        <button onclick="toggleLanguage()" class="theme-toggle-btn" id="langToggleBtn" aria-label="Toggle Language" title="Switch Language">
+          <span id="langToggleIcon">বাং</span>
+        </button>
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme" title="Toggle Theme">
           <span id="themeToggleIcon">☀️</span>
+        </button>
+        <button id="installBtn" class="theme-toggle-btn" style="display:none;" title="Install App" aria-label="Install App">
+          <span>📲</span>
         </button>
         <div class="header-badge">
           <span class="badge-dot"></span>
@@ -368,6 +377,105 @@
     </section>
 
   </main>
+
+  <!-- ── NEW FEATURE SECTIONS ── -->
+
+  <!-- Zakat Calculator -->
+  <section class="main-content" style="padding-top:0; padding-bottom:0;">
+  <div class="card" id="zakatSection">
+    <div class="card-header">
+      <div class="card-icon">🏦</div>
+      <div>
+        <h2>Zakat Calculator (যাকাত হিসাব)</h2>
+        <p>Calculate your annual Zakat obligation — 2.5% of eligible wealth above Nisab</p>
+      </div>
+    </div>
+    <div class="zakat-grid">
+      <div class="form-group">
+        <label for="zakatCash">💵 Cash & Bank Balance (৳)</label>
+        <input type="number" id="zakatCash" placeholder="e.g. 100000" min="0" oninput="calcZakat()" />
+      </div>
+      <div class="form-group">
+        <label for="zakatGold">🥇 Gold / Silver Value (৳)</label>
+        <input type="number" id="zakatGold" placeholder="e.g. 50000" min="0" oninput="calcZakat()" />
+      </div>
+      <div class="form-group">
+        <label for="zakatBusiness">📦 Business Goods / Stocks (৳)</label>
+        <input type="number" id="zakatBusiness" placeholder="e.g. 200000" min="0" oninput="calcZakat()" />
+      </div>
+      <div class="form-group">
+        <label for="zakatDebts">📋 Debts Owed to You (৳)</label>
+        <input type="number" id="zakatDebts" placeholder="e.g. 20000" min="0" oninput="calcZakat()" />
+      </div>
+    </div>
+    <div class="zakat-result" id="zakatResult" style="display:none;">
+      <div class="zakat-row"><span>Total Zakatable Wealth</span><span id="zakatTotal">৳ 0</span></div>
+      <div class="zakat-row"><span>Silver Nisab Threshold</span><span id="zakatNisab">৳ 67,360</span></div>
+      <div class="zakat-row zakat-eligible" id="zakatEligRow" style="display:none;"><span>✅ Status</span><span id="zakatStatus">Eligible</span></div>
+      <div class="zakat-row zakat-due"><span>⭐ Zakat Due (2.5%)</span><span id="zakatDue">৳ 0</span></div>
+    </div>
+  </div>
+
+  <!-- Kurbani Checklist -->
+  <div class="card" id="checklistSection">
+    <div class="card-header">
+      <div class="card-icon">✅</div>
+      <div>
+        <h2>Kurbani Checklist (প্রস্তুতির তালিকা)</h2>
+        <p>Track your Eid al-Adha preparation tasks step by step</p>
+      </div>
+      <button class="clear-hist-btn" onclick="resetChecklist()" style="margin-left:auto;">↺ Reset</button>
+    </div>
+    <div class="checklist-items" id="checklistItems"></div>
+    <div class="checklist-progress-wrap">
+      <span id="checklistProgressLabel" class="field-hint">0 of 8 tasks completed</span>
+      <div class="checklist-bar"><div class="checklist-bar-fill" id="checklistBarFill"></div></div>
+    </div>
+  </div>
+
+  <!-- Eid Greeting Card -->
+  <div class="card" id="greetingSection">
+    <div class="card-header">
+      <div class="card-icon">🎉</div>
+      <div>
+        <h2>Eid Greeting Card (ঈদ কার্ড)</h2>
+        <p>Generate a beautiful Eid Mubarak card to share with family & friends</p>
+      </div>
+    </div>
+    <div class="greeting-inputs">
+      <div class="form-group">
+        <label for="greetFrom">Your Name</label>
+        <input type="text" id="greetFrom" placeholder="e.g. Ahmed" maxlength="30" />
+      </div>
+      <div class="form-group">
+        <label for="greetTo">Recipient Name / Group</label>
+        <input type="text" id="greetTo" placeholder="e.g. Family & Friends" maxlength="40" />
+      </div>
+    </div>
+    <button class="calc-btn" style="margin-top:16px; padding:14px;" onclick="generateCard()">
+      🌙 Generate Eid Card ✨
+    </button>
+    <canvas id="greetingCanvas" width="600" height="340" style="display:none; width:100%; margin-top:16px; border-radius:14px; box-shadow:var(--shadow);"></canvas>
+    <div class="result-actions" id="greetingActions" style="display:none; margin-top:12px;">
+      <button class="action-btn share-btn" onclick="shareGreetingCard()">📤 Share Card</button>
+      <button class="action-btn print-btn" onclick="downloadCard()">⬇️ Download</button>
+    </div>
+  </div>
+
+  <!-- QR Code -->
+  <div class="card" id="qrSection" style="display:none;">
+    <div class="card-header">
+      <div class="card-icon">📷</div>
+      <div>
+        <h2>Share via QR Code</h2>
+        <p>Let others scan to open this calculator instantly</p>
+      </div>
+    </div>
+    <div id="qrCodeDisplay" style="display:flex; justify-content:center; padding:20px; background:rgba(255,255,255,0.95); border-radius:12px; margin:8px 0;"></div>
+    <p style="text-align:center; font-size:0.82rem; color:var(--text-muted); margin-top:8px;">📱 Scan with any camera to open Kurbani Calculator</p>
+  </div>
+
+  </section>
 
   <footer class="site-footer">
     <div class="footer-inner">
