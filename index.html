@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kurbani Calculator – Eid al-Adha 2026</title>
+  <meta name="description"
+    content="A beautiful Kurbani (Qurbani) Calculator for Eid al-Adha – calculate your animal shares, costs and obligations easily." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- Animated Background -->
+  <div class="bg-canvas">
+    <div class="star-field" id="starField"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="logo-wrap">
+        <span class="logo-icon">☪</span>
+        <div class="logo-text">
+          <h1>Kurbani <span class="accent">Calculator</span></h1>
+          <p>Eid al-Adha 1447 AH · 2026</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button id="themeToggleBtn" onclick="toggleTheme()" class="theme-toggle-btn" aria-label="Toggle Theme"
+          title="Toggle Theme">
+          <span id="themeToggleIcon">☀️</span>
+        </button>
+        <div class="header-badge">
+          <span class="badge-dot"></span>
+          <span>Eid Mubarak 🌙</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⏳ Countdown Timer Banner -->
+    <div class="countdown-bar" id="countdownBar">
+      <span class="cd-label">🕌 Eid al-Adha in</span>
+      <div class="cd-units">
+        <div class="cd-unit"><span id="cdDays">--</span><small>Days</small></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span id="cdHours">--</span><small>Hrs</small></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span id="cdMins">--</span><small>Min</small></div>
+        <div class="cd-sep">:</div>
+        <div class="cd-unit"><span id="cdSecs">--</span><small>Sec</small></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-content">
+
+    <!-- Nisab Check Card -->
+    <section class="card nisab-card" id="nisabSection">
+      <div class="card-header">
+        <div class="card-icon">⚖️</div>
+        <div>
+          <h2>Nisab Eligibility Check</h2>
+          <p>Determine if Kurbani is obligatory for you</p>
+        </div>
+      </div>
+      <div class="nisab-info">
+        <div class="info-box">
+          <span class="info-label">Silver Nisab (612.36g)</span>
+          <span class="info-val" id="silverNisabVal">Loading…</span>
+        </div>
+        <div class="info-box">
+          <span class="info-label">Gold Nisab (87.48g)</span>
+          <span class="info-val" id="goldNisabVal">Loading…</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="netWorth">Your Net Assets (BDT ৳)</label>
+        <input type="number" id="netWorth" placeholder="e.g. 150000" min="0" />
+      </div>
+      <div class="nisab-result" id="nisabResult"></div>
+    </section>
+
+    <!-- Calculator Card -->
+    <section class="card calc-card">
+      <div class="card-header">
+        <div class="card-icon">🐄</div>
+        <div>
+          <h2>Kurbani Share Calculator</h2>
+          <p>Calculate animals, shares and total cost</p>
+        </div>
+      </div>
+
+      <!-- Step 1 – Animal Type -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">1</span> Select Animal Type</div>
+        <div class="animal-grid" id="animalGrid">
+          <button class="animal-btn active" data-animal="cow" id="btn-cow">
+            <span class="animal-emoji">🐄</span>
+            <span class="animal-name">Cow / Buffalo</span>
+            <span class="animal-shares">7 shares / animal</span>
+          </button>
+          <button class="animal-btn" data-animal="goat" id="btn-goat">
+            <span class="animal-emoji">🐐</span>
+            <span class="animal-name">Goat / Sheep</span>
+            <span class="animal-shares">1 share / animal</span>
+          </button>
+          <button class="animal-btn" data-animal="camel" id="btn-camel">
+            <span class="animal-emoji">🐪</span>
+            <span class="animal-name">Camel</span>
+            <span class="animal-shares">7 shares / animal</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2 – Participants -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">2</span> Number of Participants</div>
+        <div class="counter-row">
+          <button class="counter-btn" id="decreaseBtn" onclick="changeCount(-1)">−</button>
+          <div class="counter-display">
+            <span id="participantCount">1</span>
+            <small>people</small>
+          </div>
+          <button class="counter-btn" id="increaseBtn" onclick="changeCount(1)">+</button>
+        </div>
+        <div class="quick-btns">
+          <span class="quick-label">Quick select:</span>
+          <button class="qbtn" onclick="setCount(1)">1</button>
+          <button class="qbtn" onclick="setCount(3)">3</button>
+          <button class="qbtn" onclick="setCount(7)">7</button>
+          <button class="qbtn" onclick="setCount(14)">14</button>
+          <button class="qbtn" onclick="setCount(21)">21</button>
+        </div>
+      </div>
+
+      <!-- Step 2b – Calculation Mode -->
+      <div class="step" id="calcModeStep">
+        <div class="step-label"><span class="step-num">2b</span> Calculation Mode</div>
+        <div class="mode-presets" style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
+          <button class="preset-btn active" id="modeBtnShare" onclick="setCalcMode('share')">🛒 Buy by Shares (অংশ
+            হিসেবে)</button>
+          <button class="preset-btn" id="modeBtnWhole" onclick="setCalcMode('whole')">🤝 Split Whole Animal
+            (ভাগাভাগi)</button>
+        </div>
+        <p class="field-hint" id="calcModeHint">
+          <strong>Buy by Shares:</strong> Each participant pays for and receives exactly 1 share (e.g. 1/7th of a cow).
+          Remaining shares are left out.<br>
+          <strong>Split Whole Animal:</strong> Participants split the entire animal's cost and meat weight equally.
+        </p>
+      </div>
+
+      <!-- Step 3 – Price per Animal -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">3</span> Estimated Price per Animal (BDT ৳)</div>
+        <div class="price-presets" id="pricePresets">
+          <!-- Presets injected by JS -->
+        </div>
+        <div class="form-group">
+          <label for="customPrice">Or enter custom price</label>
+          <input type="number" id="customPrice" placeholder="e.g. 80000" min="0" />
+        </div>
+      </div>
+
+      <!-- Step 4 – Animal Weight (Optional) -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">4</span> Animal Weight / Meat Yield (Optional)</div>
+        <div class="weight-presets" style="display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap;">
+          <button class="preset-btn active" id="weightModeAuto" onclick="setWeightMode('auto')">📊 Use Average
+            Weight</button>
+          <button class="preset-btn" id="weightModeManual" onclick="setWeightMode('manual')">✏️ Enter Clean Meat
+            (KG)</button>
+          <button class="preset-btn" id="weightModeLive" onclick="setWeightMode('live')">🐄 Enter Live Weight
+            (KG)</button>
+        </div>
+        <div class="form-group" id="manualWeightGroup" style="display: none;">
+          <label for="manualMeatKg">Clean Meat Weight per Animal (KG)</label>
+          <input type="number" id="manualMeatKg" placeholder="e.g. 150" min="1" />
+          <span class="field-hint">💡 Clean meat is typically 35–40% of live weight for cows, 40–45% for goats.</span>
+        </div>
+        <div id="liveWeightGroup" style="display: none;">
+          <div class="form-group">
+            <label for="liveWeightKg">Live Body Weight per Animal (KG)</label>
+            <input type="number" id="liveWeightKg" placeholder="e.g. 400" min="1" />
+          </div>
+          <div class="form-group" style="margin-top: 10px;">
+            <label for="yieldPct">Clean Meat Yield (%)</label>
+            <div class="yield-presets">
+              <button class="preset-btn active" data-yield="38" onclick="setYield(this, 38)">Cow 38%</button>
+              <button class="preset-btn" data-yield="42" onclick="setYield(this, 42)">Goat 42%</button>
+              <button class="preset-btn" data-yield="36" onclick="setYield(this, 36)">Camel 36%</button>
+              <button class="preset-btn" data-yield="custom" onclick="setYield(this, 'custom')">Custom %</button>
+            </div>
+            <input type="number" id="yieldPct" value="38" min="1" max="100" style="margin-top: 8px;" />
+          </div>
+          <div class="live-weight-result" id="liveWeightResult"></div>
+        </div>
+      </div>
+
+      <!-- Step 5 – Participant Names (Optional) -->
+      <div class="step">
+        <div class="step-label"><span class="step-num">5</span> Participant Names <span
+            style="font-size:0.72rem; font-weight:400; color: var(--text-muted); text-transform:none;">(Optional)</span>
+        </div>
+        <div class="name-input-row">
+          <input type="text" id="nameInput" placeholder="e.g. Ahmed, Fatima, Usman…" maxlength="30"
+            onkeydown="if(event.key==='Enter') addName()" />
+          <button class="add-name-btn" onclick="addName()" id="addNameBtn">+ Add</button>
+        </div>
+        <div class="name-tags" id="nameTags"></div>
+        <p class="field-hint" id="nameHint">Add names of participants. The per-person cost breakdown will appear in
+          results.</p>
+      </div>
+
+      <!-- Calculate Button -->
+      <button class="calc-btn" id="calcBtn" onclick="calculate()">
+        <span class="calc-btn-icon">✦</span>
+        Calculate Kurbani
+        <span class="calc-btn-icon">✦</span>
+      </button>
+    </section>
+
+    <!-- Results Card -->
+    <section class="card result-card" id="resultCard" style="display:none;">
+      <div class="card-header">
+        <div class="card-icon">📋</div>
+        <div>
+          <h2>Your Kurbani Summary</h2>
+          <p id="resultSubtitle">Based on your inputs</p>
+        </div>
+      </div>
+
+      <div class="result-grid" id="resultGrid"></div>
+
+      <!-- Currency Converter Row -->
+      <div class="currency-row" id="currencyRow"></div>
+
+      <div class="share-breakdown" id="shareBreakdown"></div>
+
+      <!-- Per-Person Names Table -->
+      <div id="namesBreakdown"></div>
+
+      <div class="dua-box">
+        <p class="dua-arabic">بِسْمِ اللَّهِ اللَّهُمَّ تَقَبَّلْ مِنِّي</p>
+        <p class="dua-trans">"Bismillah, Allahumma taqabbal minni" – In the name of Allah, O Allah accept from me.</p>
+      </div>
+
+      <div class="result-actions">
+        <button class="action-btn share-btn" onclick="shareResult()">📤 Share</button>
+        <button class="action-btn print-btn" onclick="printResult()">🖨️ Print</button>
+        <button class="action-btn save-btn" onclick="saveToHistory()">💾 Save</button>
+      </div>
+    </section>
+
+    <!-- Info Cards -->
+    <section class="info-row">
+      <div class="card info-card">
+        <div class="info-card-icon">📖</div>
+        <h3>Rules of Kurbani</h3>
+        <ul class="rule-list">
+          <li>Obligatory on every adult Muslim who owns Nisab.</li>
+          <li>Animal must be sacrificed after Eid prayer on 10–12 Dhul Hijja.</li>
+          <li>Cow/Buffalo/Camel can be shared by up to 7 people.</li>
+          <li>Goat/Sheep counts as 1 full Kurbani.</li>
+          <li>Meat should be divided: ⅓ for family, ⅓ for neighbours, ⅓ for poor.</li>
+        </ul>
+      </div>
+      <div class="card info-card">
+        <div class="info-card-icon">🗓️</div>
+        <h3>Key Dates 2026 (Bangladesh)</h3>
+        <ul class="rule-list">
+          <li><strong>Dhul Hijja 1:</strong> May 19, 2026</li>
+          <li><strong>Day of Arafah:</strong> May 27, 2026</li>
+          <li><strong>Eid al-Adha:</strong> May 28, 2026</li>
+          <li><strong>Sacrifice Days:</strong> May 28 – 30, 2026</li>
+          <li><strong>Last Day of Kurbani:</strong> May 30, 2026 (sunset)</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- History Card -->
+    <section class="card history-card" id="historySection" style="display:none;">
+      <div class="card-header">
+        <div class="card-icon">📜</div>
+        <div>
+          <h2>Calculation History</h2>
+          <p>Your recent Kurbani calculations</p>
+        </div>
+        <button class="clear-hist-btn" onclick="clearHistory()">🗑️ Clear All</button>
+      </div>
+      <div id="historyList"></div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+
+      <div class="footer-brand-row">
+        <span class="footer-logo">&#9770; Kurbani Calculator</span>
+        <p class="footer-tagline">Eid Mubarak &#127769; May Allah accept your Kurbani &mdash; Built with &#10084;&#65039; for the Ummah</p>
+      </div>
+
+      <div class="dev-card">
+        <div class="dev-card-glow"></div>
+        <div class="dev-avatar-wrap">
+          <img src="developer.jpg" alt="Jarif Ovi" class="dev-avatar dev-avatar-photo" />
+          <span class="dev-available-dot" title="Available for work"></span>
+        </div>
+        <div class="dev-card-body">
+          <div class="dev-name-row">
+            <h3 class="dev-name">Jarif Ovi</h3>
+          </div>
+          <div class="dev-contacts">
+            <a href="tel:01880275244" class="dev-contact-link">
+              <span class="dev-contact-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11a19.79 19.79 0 01-3.07-8.67A2 2 0 012 .18h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 7.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"></path></svg>
+              </span>
+              <span>01880275244</span>
+            </a>
+            <a href="mailto:jarifovi7@gmail.com" class="dev-contact-link">
+              <span class="dev-contact-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              </span>
+              <span>jarifovi7@gmail.com</span>
+            </a>
+            <a href="https://wa.me/8801880275244" target="_blank" rel="noopener" class="dev-contact-link dev-contact-whatsapp">
+              <span class="dev-contact-icon">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              </span>
+              <span>WhatsApp</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p>&copy; 2026 <strong>Jarif Ovi</strong>. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Print-only overlay -->
+  <div id="printArea" style="display:none;"></div>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
