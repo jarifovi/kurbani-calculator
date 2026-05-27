@@ -363,12 +363,16 @@ function calculate(isLoading = false) {
 function renderResult(r) {
   const card = document.getElementById('resultCard');
 
+  // Dynamic, user-friendly labels based on mode
+  const animalsLabel = r.calcMode === 'share' ? 'Animals Shared' : 'Whole Animals';
+  const totalCostLabel = r.calcMode === 'share' ? 'Group Total Cost' : 'Whole Animal(s) Cost';
+
   // Grid
   document.getElementById('resultGrid').innerHTML = `
-    <div class="result-item"><div class="result-num">${r.animal.emoji} ${r.totalAnimals}</div><div class="result-label">Animals Needed</div></div>
+    <div class="result-item"><div class="result-num">${r.animal.emoji} ${r.totalAnimals}</div><div class="result-label">${animalsLabel}</div></div>
     <div class="result-item"><div class="result-num">${r.people}</div><div class="result-label">Participants</div></div>
-    <div class="result-item"><div class="result-num">৳ ${fmt(Math.round(r.yourCost))}</div><div class="result-label">Your Share Cost</div></div>
-    <div class="result-item"><div class="result-num">৳ ${fmt(r.totalCost)}</div><div class="result-label">Total Cost</div></div>
+    <div class="result-item"><div class="result-num">৳ ${fmt(r.yourCost)}</div><div class="result-label">Cost per Person</div></div>
+    <div class="result-item"><div class="result-num">৳ ${fmt(r.totalCost)}</div><div class="result-label">${totalCostLabel}</div></div>
   `;
 
   // Currency
@@ -436,10 +440,13 @@ function hideResult() {
 function shareResult() {
   if (!lastResult) return;
   const r = lastResult;
-  const text = `🌙 Eid al-Adha 2026 – My Kurbani Summary\n`
+  const label = r.calcMode === 'share' ? 'Group Total' : 'Whole Animal';
+  const text = `🕌 My Kurbani Summary 🕌\n`
+    + `-------------------------------\n`
     + `Animal: ${r.animal.emoji} ${r.animal.label}\n`
+    + `Mode: ${r.calcMode === 'share' ? 'Buy by Shares' : 'Split Whole Animal'}\n`
     + `Animals: ${r.totalAnimals} | Participants: ${r.people}\n`
-    + `My Share: ৳ ${fmt(Math.round(r.yourCost))} | Total: ৳ ${fmt(r.totalCost)}\n`
+    + `Cost per Person: ৳ ${fmt(r.yourCost)} | ${label}: ৳ ${fmt(r.totalCost)}\n`
     + `Est. Meat: ~${r.totalMeatKg} kg (~${r.meatPerPerson} kg/person)\n\n`
     + `Calculated with Kurbani Calculator 🕌\nEid Mubarak! بِسْمِ اللَّهِ`;
   if (navigator.share) {
@@ -456,18 +463,21 @@ function copyText(text) {
 function printResult() {
   if (!lastResult) return;
   const r = lastResult;
+  const animalsLabel = r.calcMode === 'share' ? 'Animals Shared' : 'Whole Animals';
+  const totalCostLabel = r.calcMode === 'share' ? 'Group Total' : 'Whole Animal(s)';
+  
   const nameRows = r.names.length > 0
-    ? `<table><thead><tr><th>#</th><th>Name</th><th>Share Cost</th><th>Meat</th></tr></thead><tbody>`
-      + r.names.map((n,i) => `<tr><td>${i+1}</td><td>${n}</td><td>৳ ${fmt(Math.round(r.yourCost))}</td><td>~${r.meatPerPerson} kg</td></tr>`).join('')
+    ? `<table><thead><tr><th>#</th><th>Name</th><th>Cost per Person</th><th>Meat Share</th></tr></thead><tbody>`
+      + r.names.map((n,i) => `<tr><td>${i+1}</td><td>${n}</td><td>৳ ${fmt(r.yourCost)}</td><td>~${r.meatPerPerson} kg</td></tr>`).join('')
       + `</tbody></table>` : '';
   document.getElementById('printArea').innerHTML = `
     <h2>☪ Kurbani Summary – Eid al-Adha 2026</h2>
     <p class="print-subtitle">${r.animal.emoji} ${r.animal.label} | ${r.people} Participants | ${r.date}</p>
     <div class="print-grid">
-      <div class="print-box"><div class="print-num">${r.animal.emoji} ${r.totalAnimals}</div><div class="print-lbl">Animals</div></div>
+      <div class="print-box"><div class="print-num">${r.animal.emoji} ${r.totalAnimals}</div><div class="print-lbl">${animalsLabel}</div></div>
       <div class="print-box"><div class="print-num">${r.people}</div><div class="print-lbl">Participants</div></div>
-      <div class="print-box"><div class="print-num">৳ ${fmt(Math.round(r.yourCost))}</div><div class="print-lbl">Your Share</div></div>
-      <div class="print-box"><div class="print-num">৳ ${fmt(r.totalCost)}</div><div class="print-lbl">Total Cost</div></div>
+      <div class="print-box"><div class="print-num">৳ ${fmt(r.yourCost)}</div><div class="print-lbl">Cost per Person</div></div>
+      <div class="print-box"><div class="print-num">৳ ${fmt(r.totalCost)}</div><div class="print-lbl">${totalCostLabel}</div></div>
     </div>
     <table>
       <thead><tr><th>Detail</th><th>Value</th></tr></thead>
