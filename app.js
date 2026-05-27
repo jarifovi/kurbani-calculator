@@ -378,13 +378,16 @@ function renderResult(r) {
   const animalsLabel = r.calcMode === 'share' ? 'Animals Shared' : 'Whole Animals';
   const totalCostLabel = r.calcMode === 'share' ? 'Group Total Cost' : 'Whole Animal(s) Cost';
 
-  // Grid
+  // Grid with animated values
   document.getElementById('resultGrid').innerHTML = `
     <div class="result-item"><div class="result-num">${r.animal.emoji} ${r.totalAnimals}</div><div class="result-label">${animalsLabel}</div></div>
     <div class="result-item"><div class="result-num">${r.people}</div><div class="result-label">Participants</div></div>
-    <div class="result-item"><div class="result-num">৳ ${fmt(r.yourCost)}</div><div class="result-label">Cost per Person</div></div>
-    <div class="result-item"><div class="result-num">৳ ${fmt(r.totalCost)}</div><div class="result-label">${totalCostLabel}</div></div>
+    <div class="result-item"><div class="result-num">৳ <span id="animYourCost">0</span></div><div class="result-label">Cost per Person</div></div>
+    <div class="result-item"><div class="result-num">৳ <span id="animTotalCost">0</span></div><div class="result-label">${totalCostLabel}</div></div>
   `;
+
+  animateValue(document.getElementById('animYourCost'), 0, r.yourCost, 600);
+  animateValue(document.getElementById('animTotalCost'), 0, r.totalCost, 600);
 
   // Currency
   const cr = document.getElementById('currencyRow');
@@ -434,6 +437,18 @@ function renderResult(r) {
   // Subtitle
   document.getElementById('resultSubtitle').textContent =
     `${r.animal.label} • ${r.people} people • Calculated ${r.date}`;
+
+  // Add QR button if not already there
+  const actions = document.querySelector('#resultCard .result-actions');
+  if (actions && !document.getElementById('qrBtn')) {
+    const qrBtn = document.createElement('button');
+    qrBtn.id = 'qrBtn';
+    qrBtn.className = 'action-btn';
+    qrBtn.style.cssText = 'background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);color:var(--gold-light);';
+    qrBtn.innerHTML = '📷 QR Code';
+    qrBtn.onclick = generateQR;
+    actions.appendChild(qrBtn);
+  }
 
   card.style.display = 'block';
   card.style.animation = 'none';
@@ -1016,23 +1031,6 @@ function generateQR() {
   qrSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-/* ── RESULT ACTIONS: add QR button ── */
-// Patch renderResult to expose QR button in results
-const _origRenderResult = renderResult;
-function renderResult(r) {
-  _origRenderResult(r);
-  // Add QR button if not already there
-  const actions = document.querySelector('#resultCard .result-actions');
-  if (actions && !document.getElementById('qrBtn')) {
-    const qrBtn = document.createElement('button');
-    qrBtn.id = 'qrBtn';
-    qrBtn.className = 'action-btn';
-    qrBtn.style.cssText = 'background:rgba(212,168,67,0.1);border:1px solid rgba(212,168,67,0.3);color:var(--gold-light);';
-    qrBtn.innerHTML = '📷 QR Code';
-    qrBtn.onclick = generateQR;
-    actions.appendChild(qrBtn);
-  }
-}
 
 /* ── INIT CHECKLIST ON LOAD ── */
 document.addEventListener('DOMContentLoaded', () => {
