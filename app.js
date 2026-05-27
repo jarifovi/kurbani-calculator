@@ -51,6 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
   wireManualWeightInput();
   startCountdown();
   loadHistory();
+
+  // Dismiss preloader after page is fully ready
+  const preloader = document.getElementById('appPreloader');
+  if (preloader) {
+    // Wait for progress bar animation (1.2s) + a small buffer, then fade out
+    setTimeout(() => {
+      preloader.classList.add('fade-out');
+      // Remove from DOM after transition ends so it doesn't block interaction
+      preloader.addEventListener('transitionend', () => preloader.remove(), { once: true });
+    }, 1400);
+  }
 });
 
 /* ── THEME SWITCHER ── */

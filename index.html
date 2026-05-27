@@ -7,15 +7,41 @@
   <title>Kurbani Calculator – Eid al-Adha 2026</title>
   <meta name="description"
     content="A beautiful Kurbani (Qurbani) Calculator for Eid al-Adha – calculate your animal shares, costs and obligations easily." />
+  <!-- Performance: DNS prefetch & preconnect -->
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Preload critical CSS -->
+  <link rel="preload" href="style.css" as="style" />
+  <!-- Fonts with display=swap for instant text render -->
   <link
-    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700;800&display=swap"
     rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+  <!-- PWA theme color -->
+  <meta name="theme-color" content="#050d0a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 </head>
 
 <body>
+
+  <!-- Unique Glassmorphic Preloader -->
+  <div id="appPreloader" class="app-preloader">
+    <div class="preloader-content">
+      <div class="preloader-arabic">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>
+      <div class="preloader-moon-wrap">
+        <span class="preloader-moon">🌙</span>
+        <span class="preloader-glow"></span>
+      </div>
+      <h1 class="preloader-title">Kurbani Calculator</h1>
+      <p class="preloader-subtitle">Preparing Eid Dashboard...</p>
+      <div class="preloader-bar">
+        <div class="preloader-progress"></div>
+      </div>
+    </div>
+  </div>
 
   <!-- Animated Background -->
   <div class="bg-canvas">
@@ -393,7 +419,7 @@
   <!-- Print-only overlay -->
   <div id="printArea" style="display:none;"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js" defer></script>
 </body>
 
 </html>
