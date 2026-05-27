@@ -1143,9 +1143,18 @@ body.light-mode .footer-bottom p {
 
 /* ── Responsive ── */
 @media (max-width: 680px) {
-  .header-inner { flex-direction: column; align-items: flex-start; }
-  .animal-grid  { grid-template-columns: 1fr; }
-  .result-grid  { grid-template-columns: 1fr; }
+  .header-inner { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .animal-grid  { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .animal-btn   { padding: 12px 8px; }
+  .animal-emoji { font-size: 1.8rem; }
+  .animal-name  { font-size: 0.8rem; }
+  .animal-shares { font-size: 0.65rem; }
+  
+  .result-grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .result-item  { padding: 14px 10px; }
+  .result-num   { font-size: 1.6rem; }
+  .result-label { font-size: 0.7rem; }
+  
   .info-row     { grid-template-columns: 1fr; }
   .nisab-info   { grid-template-columns: 1fr; }
   .card         { padding: 20px; }
@@ -1153,11 +1162,16 @@ body.light-mode .footer-bottom p {
 }
 
 @media (max-width: 420px) {
-  .animal-grid { grid-template-columns: repeat(3, 1fr); }
-  .animal-btn  { padding: 12px 6px; }
-  .animal-emoji { font-size: 1.6rem; }
-  .animal-name  { font-size: 0.72rem; }
+  .animal-btn  { padding: 10px 4px; }
+  .animal-emoji { font-size: 1.5rem; }
+  .animal-name  { font-size: 0.7rem; }
   .animal-shares { display: none; }
+  
+  .dua-tab-btn { padding: 6px 12px; font-size: 0.75rem; }
+  .dua-arabic { font-size: 1.25rem; line-height: 2; padding: 12px 16px; }
+  
+  .result-num { font-size: 1.4rem; }
+  .result-label { font-size: 0.65rem; }
 }
 
 /* ── Countdown Bar ── */
